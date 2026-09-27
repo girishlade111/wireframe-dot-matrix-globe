@@ -22,8 +22,8 @@ Next.js 15, React 19, D3.js geo projections, and Tailwind CSS v4.
   continent polygons (Natural Earth 110m dataset), projected with
   `d3.geoOrthographic` ("view from space").
 - **Auto-rotation** — smooth continuous spin via `d3.timer`.
-- **Drag to rotate** — click-drag spins the globe manually (latitude
-  clamped ±90°); auto-rotate resumes on release.
+- **Drag to rotate** — click-drag (or touch-drag) spins the globe
+  manually (latitude clamped ±90°); auto-rotate resumes on release.
 - **Scroll to zoom** — 0.5×–3× zoom range.
 - **Retina-crisp canvas** — full `devicePixelRatio` scaling.
 - **Wireframe details** — graticule grid + continent outlines over a pure
@@ -39,13 +39,13 @@ Next.js 15, React 19, D3.js geo projections, and Tailwind CSS v4.
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15.2 (App Router) |
+| Framework | Next.js 15.2.8 (App Router) |
 | UI | React 19, Tailwind CSS v4 (CSS-first config) |
-| Visualization | D3.js (`d3.geoOrthographic`, `d3.geoPath`, `d3.geoGraticule`, `d3.timer`) |
+| Visualization | D3.js 7 (`d3.geoOrthographic`, `d3.geoPath`, `d3.geoGraticule`, `d3.timer`) |
 | Map data | Natural Earth 1:110m land GeoJSON (runtime fetch) |
 | Fonts | Geist Sans + Geist Mono |
 | Analytics | Vercel Web Analytics |
-| Theming | shadcn/ui tokens + `next-themes` (wired, not yet mounted) |
+| Theming | shadcn/ui OKLCH tokens (dark-first, hardcoded) |
 | Icons | lucide-react |
 | Language | TypeScript (strict) |
 | Package manager | pnpm |
@@ -64,16 +64,12 @@ git clone https://github.com/girishlade111/wireframe-dot-matrix-globe.git
 cd wireframe-dot-matrix-globe
 
 # 2. Install
-pnpm install
+pnpm install   # pnpm ≥ 12 asks once to approve the `sharp` build script
 
-# 3. Fix known missing dependencies (see docs/THIRD_PARTY_INTEGRATIONS.md)
-pnpm add geist @vercel/analytics next-themes
-pnpm add d3@7   # pins d3 off "latest"
-
-# 4. Run
+# 3. Run
 pnpm dev        # → http://localhost:3000
 
-# 5. Production build
+# 4. Production build
 pnpm build && pnpm start
 ```
 
@@ -88,13 +84,12 @@ wireframe-dot-matrix-globe/
 │   ├── page.tsx          # Home route → <RotatingEarth width={700} height={500}/>
 │   └── globals.css       # ★ Active stylesheet: Tailwind v4 + OKLCH monochrome theme
 ├── components/
-│   ├── rotating-earth.tsx # ★ The globe: canvas + D3 projection + interactions
-│   └── theme-provider.tsx # next-themes wrapper (currently unused)
+│   └── rotating-earth.tsx # ★ The globe: canvas + D3 projection + interactions
 ├── lib/
 │   └── utils.ts          # cn() class-merge helper
-├── styles/
-│   └── globals.css       # Dead file — not imported (safe to delete)
-├── public/               # Placeholder images (v0 leftovers, unreferenced)
+├── public/               # (empty — v0 placeholder images removed)
+├── eslint.config.mjs     # Flat config: next/core-web-vitals + next/typescript
+├── pnpm-workspace.yaml   # pnpm ≥ 12 build-script approval (sharp)
 ├── docs/
 │   ├── ENVIRONMENT_AND_CONFIGURATION.md  # .env guide + every config file explained
 │   ├── THIRD_PARTY_INTEGRATIONS.md       # All external deps, datasets & services
@@ -157,12 +152,11 @@ Full table in the Developer Guide.
 
 ## 🔒 Security notes
 
-- **Next.js 15.2.4 is affected by React2Shell (CVE-2025-55182, CVSS 10.0
-  RCE)** plus CVE-2025-66478 / CVE-2025-55184 / CVE-2025-67779. Bump to
-  **≥ 15.2.8** (`pnpm add next@15.2.8`) before any production deploy.
-- `next.config.mjs` currently sets `eslint.ignoreDuringBuilds` and
-  `typescript.ignoreBuildErrors` — remove these once lint/type errors are
-  fixed so broken code can't ship silently.
+- ✅ **Fixed (audit, Sep 2026):** Next.js bumped **15.2.4 → 15.2.8**,
+  patching React2Shell (CVE-2025-55182, CVSS 10.0 RCE) plus
+  CVE-2025-66478 / CVE-2025-55184 / CVE-2025-67779.
+- ✅ `next.config.mjs` no longer ignores ESLint/TypeScript errors —
+  `tsc --noEmit`, `eslint`, and `next build` all pass clean.
 - No secrets or env vars exist in this app; `.gitignore` excludes `.env*`.
 
 ---
@@ -171,11 +165,10 @@ Full table in the Developer Guide.
 
 - [ ] Self-host the GeoJSON in `public/data/` (offline support)
 - [ ] `NEXT_PUBLIC_LAND_DATA_URL` override for the dataset
-- [ ] Mount `ThemeProvider` + add a light/dark toggle
 - [ ] Country hover tooltips / click-to-focus
 - [ ] Day/night terminator shading
-- [ ] Remove dead files (`styles/globals.css`, placeholders)
-- [ ] Add ESLint properly (`next lint` is deprecated in Next 15)
+- [x] ~~Remove dead files~~ — done in audit
+- [x] ~~Add ESLint properly~~ — done in audit (`eslint.config.mjs`)
 
 ---
 

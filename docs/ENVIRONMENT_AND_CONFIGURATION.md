@@ -83,12 +83,6 @@ NEXT_PUBLIC_ANALYTICS_ID=
 
 ```js
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,   // skip ESLint during `next build`
-  },
-  typescript: {
-    ignoreBuildErrors: true,    // skip `tsc` type-check during `next build`
-  },
   images: {
     unoptimized: true,          // disable Next.js image optimization
   },
@@ -97,13 +91,12 @@ const nextConfig = {
 
 | Key | What it does | Why it is set |
 |---|---|---|
-| `eslint.ignoreDuringBuilds` | `next build` skips ESLint | v0 default — deploys never fail on lint |
-| `typescript.ignoreBuildErrors` | `next build` skips type errors | v0 default — deploys never fail on TS errors |
 | `images.unoptimized` | Serves `<Image>` as-is | Required for **static export** and non-Vercel hosts (no Image Optimization server) |
 
-> ⚠️ The first two are **technical debt, not features**. They let broken
-> code ship silently. For a production-grade repo, remove both and fix the
-> underlying lint/type errors instead.
+> ✅ **Audit fix (Sep 2026):** `eslint.ignoreDuringBuilds` and
+> `typescript.ignoreBuildErrors` were removed — `tsc --noEmit`,
+> `eslint`, and `next build` all pass clean, so broken code can no
+> longer ship silently.
 
 ### `tsconfig.json` — TypeScript config
 
@@ -163,12 +156,10 @@ This is the stylesheet imported by `app/layout.tsx` and therefore the
 To retheme the app, edit the OKLCH values in this file — no Tailwind
 config file needed.
 
-### `styles/globals.css` — DEAD FILE (do not edit)
+### `styles/globals.css` — DELETED
 
-A leftover default shadcn stylesheet with a *different* (colorful) token
-set. It is **not imported anywhere** — `app/layout.tsx` imports
-`./globals.css` (the `app/` one). Editing `styles/globals.css` changes
-nothing. Safe to delete.
+This was a leftover default shadcn stylesheet, never imported anywhere.
+Removed in the Sep 2026 audit.
 
 ### `package.json` — scripts & engines
 
@@ -184,12 +175,13 @@ nothing. Safe to delete.
 - `pnpm dev` → dev server at `http://localhost:3000` (hot reload).
 - `pnpm build` → production build into `.next/`.
 - `pnpm start` → serves the production build (run after `pnpm build`).
-- `pnpm lint` → `next lint` is **deprecated/removed in newer Next.js**;
-  migrate to `eslint` directly (see Developer Guide).
+- `pnpm lint` → `eslint .` (flat config in `eslint.config.mjs`,
+  `next/core-web-vitals` + `next/typescript`).
 
 No `engines` field is declared — any Node ≥ 18.18 works, Node 20 LTS
 recommended. `pnpm-lock.yaml` pins every transitive dependency
-reproducibly.
+reproducibly. `pnpm-workspace.yaml` approves the `sharp` build script
+(`allowBuilds`), required by pnpm ≥ 12's install policy.
 
 ### `.gitignore`
 

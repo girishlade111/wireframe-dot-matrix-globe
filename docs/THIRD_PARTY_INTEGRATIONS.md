@@ -12,23 +12,20 @@ out for.
 |---|---|---|---|---|---|
 | 1 | **D3.js** (`d3`) | npm package | Map projection, GeoJSON path rendering, rotation timer | `components/rotating-earth.tsx` | ✅ In `package.json` |
 | 2 | **Natural Earth GeoJSON** (via `martynafford/natural-earth-geojson`) | Runtime data fetch | World land-mass polygons | `components/rotating-earth.tsx` (`fetch`) | 🌐 Fetched at runtime, not installed |
-| 3 | **Vercel Analytics** (`@vercel/analytics`) | npm package + Vercel service | Page-view analytics | `app/layout.tsx` (`<Analytics />`) | ⚠️ **Imported but NOT in `package.json`** |
-| 4 | **Geist font** (`geist`) | npm package | Sans/mono typeface | `app/layout.tsx` (`geist/font/sans`, `geist/font/mono`) | ⚠️ **Imported but NOT in `package.json`** |
-| 5 | **next-themes** | npm package | Dark-mode theming | `components/theme-provider.tsx` | ⚠️ **Imported but NOT in `package.json`; component unused** |
+| 3 | **Vercel Analytics** (`@vercel/analytics`) | npm package + Vercel service | Page-view analytics | `app/layout.tsx` (`<Analytics />`) | ✅ In `package.json` (added in audit, Sep 2026) |
+| 4 | **Geist font** (`geist`) | npm package | Sans/mono typeface | `app/layout.tsx` (`geist/font/sans`, `geist/font/mono`) | ✅ In `package.json` (added in audit, Sep 2026) |
+| 5 | ~~**next-themes**~~ | — | — | ~~`components/theme-provider.tsx`~~ | 🗑️ Removed in audit (component was unused dead code) |
 | 6 | **Vercel** (hosting) | Platform | Deployment + CI on push | GitHub ↔ Vercel integration | ✅ Connected (via v0) |
 | 7 | **v0.app** | Platform | AI app builder; source of this repo | Repo sync | ✅ Repo auto-syncs from v0 |
-| 8 | **Tailwind CSS v4** (+ `@tailwindcss/postcss`) | npm package | Utility CSS, CSS-first theming | `app/globals.css`, `postcss.config.mjs` | ✅ In `package.json` |
+| 8 | **Tailwind CSS v4** (+ `@tailwindcss/postcss`) | npm packages | Utility CSS, CSS-first theming | `app/globals.css`, `postcss.config.mjs` | ✅ In `package.json` (`@tailwindcss/postcss` added in audit, Sep 2026 — was missing and broke `next build`) |
 | 9 | **tw-animate-css** / **tailwindcss-animate** | npm packages | Animation utilities | `app/globals.css` | ✅ In `package.json` |
 | 10 | **lucide-react** | npm package | Icon set (shadcn default) | `components.json` (`iconLibrary`) | ✅ Installed, currently unused in code |
 | 11 | **clsx** + **tailwind-merge** + **class-variance-authority** | npm packages | `cn()` class-name utility | `lib/utils.ts` | ✅ In `package.json` |
 
-> ⚠️ **Missing-dependency warning (items 3–5):** `app/layout.tsx` imports
-> `@vercel/analytics/next` and `geist/font/*`, and
-> `components/theme-provider.tsx` imports `next-themes` — but none of the
-> three appear in `package.json`. A fresh `pnpm install` + `pnpm build`
-> **will fail** on these imports. This works today only because the v0/Vercel
-> build environment pre-installs them. Fix: `pnpm add @vercel/analytics
-> geist next-themes` (or remove the imports if unneeded).
+> ✅ **Resolved (audit, Sep 2026):** `geist` and `@vercel/analytics` were added
+> to `package.json`; `next-themes` was dropped entirely (its
+> `theme-provider.tsx` was unused dead code and has been deleted). A clean
+> `pnpm install` + `pnpm build` now succeeds.
 
 ---
 
@@ -90,16 +87,12 @@ out for.
 - **Action required:** `pnpm add geist` — or the build breaks on a clean
   install.
 
-## 5. next-themes
+## 5. ~~next-themes~~ — removed
 
-- **Code:** `components/theme-provider.tsx` wraps `next-themes`'
-  `ThemeProvider`. **It is currently unused** — `app/layout.tsx` does not
-  render it. The globe page forces dark styling via hardcoded `dark`
-  classes and a `#1a1a1a` background.
-- **To enable real theme switching:** `pnpm add next-themes`, wrap
-  `{children}` in `<ThemeProvider>` inside `app/layout.tsx`, and add a
-  toggle UI.
-- **Or:** delete `components/theme-provider.tsx` to remove dead code.
+`components/theme-provider.tsx` wrapped `next-themes`' `ThemeProvider` but
+was **never rendered** by `app/layout.tsx`. It was deleted in the Sep 2026
+audit along with the `next-themes` dependency. The page hardcodes its dark
+aesthetic (`bg-[#1a1a1a]`, class-based `dark` variants).
 
 ## 6. Vercel (hosting)
 
@@ -129,8 +122,9 @@ out for.
   class-merging helper. **class-variance-authority** is installed for
   future component variants.
 
-## `public/` placeholder assets
+## `public/` placeholder assets — removed
 
 `placeholder-logo.png/.svg`, `placeholder-user.jpg`, `placeholder.jpg`,
-`placeholder.svg` are **v0 scaffolding leftovers**, unreferenced by any
-page. Safe to delete when adding real assets.
+`placeholder.svg` were **v0 scaffolding leftovers**, unreferenced by any
+page. Deleted in the Sep 2026 audit. `public/` is now empty — add real
+assets here as needed.

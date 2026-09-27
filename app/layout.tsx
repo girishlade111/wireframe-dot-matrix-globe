@@ -5,9 +5,8 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Wireframe Dot-Matrix Globe',
+  description: 'Interactive 3D wireframe Earth rendered as a halftone dot-matrix. Drag to rotate, scroll to zoom.',
 }
 
 export default function RootLayout({
