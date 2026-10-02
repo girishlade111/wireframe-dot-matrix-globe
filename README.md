@@ -189,3 +189,11 @@ Built with ❤️ by **Girish Lade** · [ladestack.in](https://ladestack.in)
 
 Map data: [Natural Earth](https://www.naturalearthdata.com/) (public domain).
 Originally generated with [v0.app](https://v0.app) by Vercel.
+
+---
+
+## 👨‍💻 Author
+
+**Built by Girish Lade** — https://ladestack.in
+
+Check out more projects at [ladestack.in](https://ladestack.in).
